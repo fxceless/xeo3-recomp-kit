@@ -1,0 +1,15 @@
+[submodule "recompiler/thirdparty/fmt"]
+	path = recompiler/thirdparty/fmt
+	url = https://github.com/fmtlib/fmt.git
+[submodule "recompiler/thirdparty/libmspack"]
+	path = recompiler/thirdparty/libmspack
+	url = https://github.com/kyz/libmspack
+[submodule "recompiler/thirdparty/tiny-AES-c"]
+	path = recompiler/thirdparty/tiny-AES-c
+	url = https://github.com/kokke/tiny-AES-c.git
+[submodule "recompiler/thirdparty/tomlplusplus"]
+	path = recompiler/thirdparty/tomlplusplus
+	url = https://github.com/marzer/tomlplusplus.git
+[submodule "recompiler/thirdparty/xxHash"]
+	path = recompiler/thirdparty/xxHash
+	url = https://github.com/Cyan4973/xxHash.git

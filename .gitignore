@@ -1,0 +1,30 @@
+# Your games: recompiler output, objects and DLLs are large and are made from YOUR disc.
+# Never commit them -- they contain translated game code.
+games/
+
+# The custom clang (download it, see docs/SETUP.md)
+toolchain/
+
+# Build output
+recompiler/build/
+out/
+*.obj
+*.dll
+*.lib
+*.exp
+*.pdb
+*.map
+
+# Game and system files must never be committed
+*.xex
+*.xbe
+*.iso
+*.dmp
+image.bin
+
+# Logs
+*.log
+
+__pycache__/
+*.pyc
+.vs/
