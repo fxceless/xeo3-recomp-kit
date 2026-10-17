@@ -7,14 +7,24 @@ and original Xbox games boot through it ([docs/ORIGINAL_XBOX.md](docs/ORIGINAL_X
 
 > **What you need, exactly.** None of it is in this repository; it all has to be yours.
 >
-> | to run | you need | what it gives the kit |
-> |---|---|---|
-> | your game | the **game disc**, dumped to an ISO yourself | its `default.xex` (recompiled) and its data (used as is) |
-> | any game | **Fuzion Frenzy**, the **PC** back-compat package (Microsoft Store) | the emulator: `Emu.exe` and the PC-side files |
-> | any game | **Super Meat Boy**, the **Xbox One** back-compat package | the Xbox 360 system: kernel, xam, system DLLs, graphics layer |
-> | any game | `kernelx.dll`, built from [XWine1/SlimEra](https://github.com/XWine1/SlimEra) | lets the Xbox One DLLs load on Windows |
-> | the dashboard (optional) | **Castle Crashers**, the **Xbox One** back-compat package (the older 2014 kind) | its `Flash` folder: the dashboard, `dash.xex` 2.0.17003.0, and its boot files |
-> | the dashboard (optional) | an **offline** Xbox 360 profile, and a Games-on-Demand package of each disc ([iso2god-rs](https://github.com/iliazeus/iso2god-rs)) | My Games |
+> **To run any game, all four of these:**
+>
+> | you need | what it gives the kit |
+> |---|---|
+> | 1. **Fuzion Frenzy**, the **PC** back-compat package (Microsoft Store) | the emulator: `Emu.exe` and the PC-side files |
+> | 2. **Super Meat Boy**, the **Xbox One** back-compat package | the Xbox 360 system: kernel, xam, system DLLs, graphics layer |
+> | 3. `kernelx.dll`, built from [XWine1/SlimEra](https://github.com/XWine1/SlimEra) | lets the Xbox One DLLs load on Windows |
+> | 4. the **game disc**, dumped to an ISO yourself | its `default.xex` (recompiled by the kit) and its data (used as is) |
+>
+> 1-3 are set up once and serve every game; 4 is per game.
+>
+> **For the dashboard (optional), also:**
+>
+> | you need | what it gives the kit |
+> |---|---|
+> | **Castle Crashers**, the **Xbox One** back-compat package (the older 2014 kind) | its `Flash` folder: the dashboard, `dash.xex` 2.0.17003.0, and its boot files |
+> | an **offline** Xbox 360 profile | the player the dashboard signs in |
+> | a Games-on-Demand package of each disc ([iso2god-rs](https://github.com/iliazeus/iso2god-rs)) | the game's entry in My Games |
 >
 > Those are the exact packages everything here was built and tested with. Others of the same
 > kind may work but haven't been tried. Plus free tools: Visual Studio 2022, Python 3, Git,
