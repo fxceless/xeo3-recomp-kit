@@ -1,7 +1,9 @@
 # xeo3-recomp-kit
 
 Run Xbox 360 games on PC through Microsoft's own back-compat emulator (XEO3), including
-games Microsoft never released for back-compat.
+games Microsoft never released for back-compat. **It works for original Xbox games too:**
+the 360's own original-Xbox emulator (`xefu`) and its DLLs come with the same console folder,
+and original Xbox games boot through it ([docs/ORIGINAL_XBOX.md](docs/ORIGINAL_XBOX.md)).
 
 > **What you need, exactly.** None of it is in this repository; it all has to be yours.
 >
