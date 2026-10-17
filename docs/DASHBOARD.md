@@ -1,5 +1,15 @@
 # The dashboard
 
+> **What you need, exactly:**
+>
+> 1. a working [console folder](CONSOLE_FOLDER.md) (Fuzion Frenzy + Super Meat Boy +
+>    `kernelx.dll`), copied to a second folder for the dashboard
+> 2. **Castle Crashers**, the Xbox One back-compat package: its `Flash` folder, with `dash.xex`
+>    2.0.17003.0 (MD5 `be915f59fc0469c16b3cf26a19d08f31`) and the dashboard's boot files
+> 3. an **offline** Xbox 360 profile ([Profiles](#profiles))
+> 4. for each game: the kit's build of it, plus a Games-on-Demand package of your disc made with
+>    [iso2god-rs](https://github.com/iliazeus/iso2god-rs)
+
 The kit can also recompile the Xbox 360 **NXE dashboard** (`dash.xex`, the 360's home screen).
 Put in a console folder, it boots like a 360 does: the dashboard comes up, signs in your
 profile, lists your recompiled games under **My Games** and starts the one you pick. Quitting
@@ -22,9 +32,9 @@ the dashboard. The Guide button opens the Guide. Play Disc boots the game "in th
 That was the project's private build of the same recompile. The kit's version is the same
 recompile: `recompile-dashboard.ps1` reproduces it to the file (230 sources, 58,669
 functions), with only the kit recompiler's later fixes differing. It has the same hooks, minus
-the private Xbox Live experiments and the debugging probes. **The kit's build has not been
-booted yet.** The [kernel loader](#the-kernel-loader) step isn't in the kit yet either. Expect
-to be the one who tries it first.
+the private Xbox Live experiments and the debugging probes. Its [kernel loader](#the-kernel-loader)
+patch reproduces the project's patched kernel byte for byte. **The kit's build has not been
+booted yet**: expect to be the one who tries it first.
 
 ## What you need
 
@@ -49,14 +59,12 @@ powershell -ExecutionPolicy Bypass -File scripts\recompile-dashboard.ps1 -DashXe
 # 2. compile it (like a game; ~240 files)
 powershell -ExecutionPolicy Bypass -File scripts\build.ps1 -Game dash
 
-# 3. make the console folder boot it
+# 3. make the console folder boot it (includes the kernel loader patch, see below)
 powershell -ExecutionPolicy Bypass -File scripts\install-dashboard.ps1 -Console "D:\XeO3 Dash" -Flash "D:\packages\<title>\Flash"
 
-# 4. the kernel loader -- see below; not automated yet
+# 4. boot it: run Emu.exe in the folder, no arguments. Once, so it creates its virtual hard drive.
 
-# 5. boot it: run Emu.exe in the folder, no arguments. Once, so it creates its virtual hard drive.
-
-# 6. each game: install its DLL here, then put it in My Games
+# 5. each game: install its DLL here, then put it in My Games
 powershell -ExecutionPolicy Bypass -File scripts\install.ps1 -Game crackdown -Console "D:\XeO3 Dash"
 powershell -ExecutionPolicy Bypass -File scripts\add-game-to-my-games.ps1 -Game crackdown -Console "D:\XeO3 Dash" -God "D:\god\Crackdown" -Disc "D:\games\Crackdown" -InDrive
 ```
@@ -222,18 +230,44 @@ the launch with a brief error. If you ever give the console a network, expect ex
 
 ## The kernel loader
 
-The 360 kernel the console package ships won't load `dash.xex` as a title from the game
-folder. Three of its checks are there because on a real console the dashboard lives in flash:
+The 360 kernel in the console package won't load `dash.xex` as a title from the game folder.
+It runs as two precompiled DLLs in the console folder (`xeo3_5d12c3b3_00175344.dll` and its
+`_no` twin), and their image loader has three checks that only make sense on a real console,
+where the dashboard lives in flash:
 
-- the XEX's allowed media is "system flash" only, and the game folder appears as a DVD
-- the XEX names the one path it may be loaded from (`\Device\Flash\dash.xex`)
-- a title that carries a device ID is expected to sit on a hard drive or memory unit
+| check | why `dash.xex` fails it |
+|---|---|
+| **allowed media** | the XEX allows "system flash" only; the game folder appears to the kernel as a DVD |
+| **bounding path** | the XEX names the one path it may be loaded from, `\Device\Flash\dash.xex`; from the game folder it is `\Device\Cdrom0\default.xex` |
+| **device digest** | a title that carries a device ID is expected on a hard drive, memory unit or USB stick, never on a DVD |
 
-None of them can be satisfied by editing the XEX: its header is integrity-checked. The
-project's console gets past them with a byte patch to the kernel's precompiled DLL in its
-console folder. That patch isn't part of this kit yet. Until it is, the dashboard will stop
-right after the kernel reads its header (the emulator's log shows the header reads and then
-the kernel exiting), and this section is where the step will be documented.
+None of them can be satisfied by editing the XEX: its header is integrity-checked inside the
+guest. So `tools\patch_kernel_dash.py` changes the kernel's answers instead. It makes six small
+edits across the two DLLs (each one listed, with what it does, in `tools\kernel_dash_patch.json`):
+
+- the media check always takes its "accepted" branch
+- the two bounding-path failure exits (`0xC00000CC`, `0xC000008B`) continue where a matching
+  path continues
+- the device check returns success for DVD media instead of `0xC000007B`
+
+Only refusals change. A module or game that passed these checks before took the same
+branches, and still does. The first attempt made the bounding-path check skip itself for
+every module, and that broke the boot (xam then took the other path). That's why only the
+failure exits are redirected.
+
+```powershell
+python -I tools\patch_kernel_dash.py status  "D:\XeO3 Dash"
+python -I tools\patch_kernel_dash.py apply   "D:\XeO3 Dash"     # install-dashboard.ps1 runs this
+python -I tools\patch_kernel_dash.py restore "D:\XeO3 Dash"
+```
+
+Like `tools\patch_vgpu.py`, it patches only the exact DLLs it was made for (MD5
+`f6f62b30...` and `e706f213...`). It checks the result against the copies the dashboard was
+tested with (`740da5de...`, `9b907e28...`) and keeps each original as `<dll>.orig`. The JSON
+holds only the bytes this project wrote, plus a SHA-1 of each run of bytes it replaces.
+Another kernel build: it refuses and changes nothing. Without it, the dashboard stops right
+after the kernel reads its header: the emulator's log shows the header reads, then the kernel
+exiting.
 
 ## Another dashboard build
 

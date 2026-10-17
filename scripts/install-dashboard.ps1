@@ -14,8 +14,8 @@
 # flash files the console package lacks (added, never overwritten), LaunchArguments.txt
 # rewritten to the dashboard's title (the original kept as LaunchArguments.txt.before_dash;
 # add-game-to-my-games.ps1 takes the games' media ID from it), zz_switch.exe (the title
-# switcher's relay) built and copied in, and the markers that switch the runtime's fixes on.
-# Nothing is launched.
+# switcher's relay) built and copied in, the markers that switch the runtime's fixes on, and
+# the kernel loader patch (tools\patch_kernel_dash.py). Nothing is launched.
 param(
     [Parameter(Mandatory = $true)][string]$Console,
     [Parameter(Mandatory = $true)][string]$Flash,
@@ -34,6 +34,9 @@ if ($running.Count) { Fail "Emu.exe is running from $Console (pid $($running[0].
 $srcDash = Join-Path $Flash "dash.xex"
 if (-not (Test-Path -LiteralPath $srcDash)) { Fail "$Flash has no dash.xex" }
 if ((Get-Md5 $srcDash) -ne $known.dashXexMd5) { Fail "$srcDash is not the dash.xex build games\dash was made from ($($known.version))." }
+# Before changing anything: is this console's kernel one the loader patch knows?
+$kst = & $py -I (Join-Path $ToolsDir "patch_kernel_dash.py") status $Console | Out-String
+if ($LASTEXITCODE -ne 0 -or $kst -match "UNKNOWN BUILD") { Write-Host $kst; Fail "the kernel loader patch does not fit this console folder (docs\DASHBOARD.md, 'The kernel loader')" }
 
 # --- the boot title -----------------------------------------------------------------------
 $boot = Join-Path $Console "Game\default.xex"
@@ -107,7 +110,12 @@ if ($xamName -match [regex]::Escape($known.xam.dllName)) {
     Write-Host "  dash_guide.on NOT created: this console's xam is not the build the Guide button was made for (everything else works)" -ForegroundColor Yellow
 }
 
+Say "== the kernel loader"
+# The console's 360 kernel refuses dash.xex as a title from the game folder (a flash-only
+# system title); tools\patch_kernel_dash.py changes its answers (docs\DASHBOARD.md,
+# 'The kernel loader'). Originals kept as *.orig; `restore` puts them back.
+& $py -I (Join-Path $ToolsDir "patch_kernel_dash.py") apply $Console
+if ($LASTEXITCODE -ne 0) { Fail "the kernel loader patch was not applied -- the dashboard cannot boot without it" }
+
 Say ""
-Write-Host ("STILL NEEDED: the console's 360 kernel refuses to load dash.xex from the game folder (it is a" +
-            " flash-only system title). This kit does not change that yet -- docs\DASHBOARD.md, 'The kernel loader'.") -ForegroundColor Yellow
-Say "Then: run Emu.exe in $Console (no arguments). Add games with scripts\add-game-to-my-games.ps1."
+Say "Done. Run Emu.exe in $Console (no arguments). Add games with scripts\add-game-to-my-games.ps1."

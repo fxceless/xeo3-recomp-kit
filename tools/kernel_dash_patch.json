@@ -1,0 +1,55 @@
+{
+  "comment": "Kernel-loader patch for the dashboard (tools\\patch_kernel_dash.py). Per DLL: the MD5 of the original it applies to, the MD5 of the tested result, and per edit the file offset, the SHA-1 of the bytes it replaces (never the bytes themselves) and our replacement bytes.",
+  "files": {
+    "xeo3_5d12c3b3_00175344.dll": {
+      "source_md5": "f6f62b3054699329f55305923811e13a",
+      "result_md5": "740da5de4272e28a9e91809da284e2f2",
+      "size": 1274368,
+      "edits": [
+        {
+          "offset": 196652,
+          "old_sha1": "2352e52516e456391afa85db54531390378a2411",
+          "new": "eb3c",
+          "what": "allowed-media check: always take its 'accepted' branch (dash.xex allows system flash only; the game folder is a DVD)"
+        },
+        {
+          "offset": 225860,
+          "old_sha1": "339a064bf16ddf5b60a4bbc7fc95b7043931318f",
+          "new": "e908000000909090",
+          "what": "bounding-path mismatch (0xC00000CC): continue where a matching path continues (dash.xex may only load from \\Device\\Flash\\dash.xex)"
+        },
+        {
+          "offset": 206854,
+          "old_sha1": "67f385127ad72fe191c561b0be3ff468bd953b69",
+          "new": "00000000",
+          "what": "device-bound digest check: return success instead of 0xC000007B for DVD media (it accepts only hard drive / memory unit / USB)"
+        }
+      ]
+    },
+    "xeo3_5d12c3b3_00175344_no.dll": {
+      "source_md5": "e706f2135f48b82d99dfe6af1f4ed0dc",
+      "result_md5": "9b907e28e705dfd71b06baef5b8be707",
+      "size": 3789312,
+      "edits": [
+        {
+          "offset": 478464,
+          "old_sha1": "f8142ca36cd82803bd73d63c9c3928af71c3f552",
+          "new": "e90600000090",
+          "what": "allowed-media check: always take its 'accepted' branch (dash.xex allows system flash only; the game folder is a DVD)"
+        },
+        {
+          "offset": 545695,
+          "old_sha1": "97240c830a3557779d5a02a3a65d56b97a69679c",
+          "new": "e927010000",
+          "what": "bounding-path mismatch (0xC00000CC): continue where a matching path continues (dash.xex may only load from \\Device\\Flash\\dash.xex)"
+        },
+        {
+          "offset": 545954,
+          "old_sha1": "97240c830a3557779d5a02a3a65d56b97a69679c",
+          "new": "e924000000",
+          "what": "bounding-path flag gate (0xC000008B): continue where a matching path continues"
+        }
+      ]
+    }
+  }
+}

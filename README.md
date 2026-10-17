@@ -3,6 +3,23 @@
 Run Xbox 360 games on PC through Microsoft's own back-compat emulator (XEO3), including
 games Microsoft never released for back-compat.
 
+> **What you need, exactly.** None of it is in this repository; it all has to be yours.
+>
+> | to run | you need | what it gives the kit |
+> |---|---|---|
+> | your game | the **game disc**, dumped to an ISO yourself | its `default.xex` (recompiled) and its data (used as is) |
+> | any game | **Fuzion Frenzy**, the **PC** back-compat package (Microsoft Store) | the emulator: `Emu.exe` and the PC-side files |
+> | any game | **Super Meat Boy**, the **Xbox One** back-compat package | the Xbox 360 system: kernel, xam, system DLLs, graphics layer |
+> | any game | `kernelx.dll`, built from [XWine1/SlimEra](https://github.com/XWine1/SlimEra) | lets the Xbox One DLLs load on Windows |
+> | the dashboard (optional) | **Castle Crashers**, the **Xbox One** back-compat package (the older 2014 kind) | its `Flash` folder: the dashboard, `dash.xex` 2.0.17003.0, and its boot files |
+> | the dashboard (optional) | an **offline** Xbox 360 profile, and a Games-on-Demand package of each disc ([iso2god-rs](https://github.com/iliazeus/iso2god-rs)) | My Games |
+>
+> Those are the exact packages everything here was built and tested with. Others of the same
+> kind may work but haven't been tried. Plus free tools: Visual Studio 2022, Python 3, Git,
+> WitherOrNot's clang build and xdvdfs ([docs/SETUP.md](docs/SETUP.md)). How the packages
+> combine: [docs/CONSOLE_FOLDER.md](docs/CONSOLE_FOLDER.md); the dashboard:
+> [docs/DASHBOARD.md](docs/DASHBOARD.md).
+
 **What gets recompiled.** A 360 game on disc is one program file, `default.xex` (the game's
 code, Crackdown's is 14 MB), plus gigabytes of data: levels, textures, sound, video. Only
 the program is recompiled. Its PowerPC code is translated to x86-64 and compiled into **one

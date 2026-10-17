@@ -1,5 +1,14 @@
 # The console folder
 
+> **What you need, exactly** (the packages everything in this kit was built and tested with):
+>
+> 1. **Fuzion Frenzy**, the **PC** back-compat package (the Windows app, untouched), for the emulator
+> 2. **Super Meat Boy**, the **Xbox One** back-compat package, for the Xbox 360 system
+> 3. **`kernelx.dll`**, built from [XWine1/SlimEra](https://github.com/XWine1/SlimEra)
+>
+> For the dashboard, also **Castle Crashers**' Xbox One back-compat package, for its `Flash`
+> folder only ([DASHBOARD.md](DASHBOARD.md)).
+
 The **console folder** is the folder `Emu.exe` runs from. It is a whole Xbox 360 minus the
 game: Microsoft's emulator, the PC-side graphics stack, the 360 kernel and system modules
 (already translated to DLLs by Microsoft), the flash filesystem and the system partitions.
