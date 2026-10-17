@@ -1,0 +1,22 @@
+{
+  "comment": "The one dash.xex build dashboard\\config.toml and switch.toml were made for. recompile-dashboard.ps1 refuses any other file. Hashes identify the file; nothing of it is in this repository.",
+  "version": "2.0.17003.0",
+  "titleId": "FFFE07D1",
+  "dashXexMd5": "be915f59fc0469c16b3cf26a19d08f31",
+  "dashXexSize": 5861376,
+  "dashDecMd5": "32b73a2d07fa07218991df08eefd0742",
+  "dllName": "xeo3_c78b4e60_cf714a41_cb4682a0_d5cedc3e_04f30dfe",
+  "expect": {
+    "recompFiles": 230,
+    "generatedFiles": 235,
+    "functions": 58669
+  },
+  "flashSupport": [
+    "dashboard.xbx", "xlaunch.fdf", "xlaunch.strings", "rrbkgnd.bmp", "recovery.ttf",
+    "nomni.xex", "nomnifwk.xex", "nomnifwm.xex", "xshell.xex", "bootanim.sav"
+  ],
+  "xam": {
+    "comment": "The xam build the Guide-button call was measured against (XamShowGuideUI at guest 0x816C46A0). Another xam = no Guide button, everything else unaffected.",
+    "dllName": "xeo3_83fb8ce4_d4f760b7_f3c90c30_54fdd243_dd4cd189"
+  }
+}

@@ -12,11 +12,18 @@ from back-compat packages you own. One console folder serves every game you reco
 
 It is made from two kinds of XEO3 back-compat package, plus one open-source DLL:
 
-| piece | where it comes from | what it supplies |
-|---|---|---|
-| **the host** | an unmodified XEO3 back-compat game package **for PC** | `Emu.exe` (the emulator, built for Windows), `MicrosoftGame.config` (the identity), the PC-side runtime files |
-| **the 360 system stack** | an **Xbox One** XEO3 back-compat package of a **native Xbox 360** title (the modern generation, see below) | `Flash\` (the kernel image, xam, ...), `SystemAuxPartition\`, `SystemExtPartition\`, `Strings\`, the precompiled `xeo3_*.dll` set for every system module, the graphics stack (`VGPUDX12.dll`, ...), `LaunchArguments.txt` |
-| `kernelx.dll` | build it from [XWine1/SlimEra](https://github.com/XWine1/SlimEra) (`make.cmd`) | a PC implementation of the Xbox One kernel library the package's DLLs import |
+| piece | where it comes from | used for this kit | what it supplies |
+|---|---|---|---|
+| **the host** | an unmodified XEO3 back-compat game package **for PC** | *Fuzion Frenzy* (PC, Microsoft Store) | `Emu.exe` (the emulator, built for Windows), `MicrosoftGame.config` (the identity), the PC-side runtime files |
+| **the 360 system stack** | an **Xbox One** XEO3 back-compat package of a **native Xbox 360** title (the modern generation, see below) | *Super Meat Boy* (Xbox One) | `Flash\` (the kernel image, xam, ...), `SystemAuxPartition\`, `SystemExtPartition\`, `Strings\`, the precompiled `xeo3_*.dll` set for every system module, the graphics stack (`VGPUDX12.dll`, ...), `LaunchArguments.txt` |
+| `kernelx.dll` | build it from [XWine1/SlimEra](https://github.com/XWine1/SlimEra) (`make.cmd`) | | a PC implementation of the Xbox One kernel library the package's DLLs import |
+
+Those two packages are the ones every result in this kit was produced with; the hashes in
+[Which emulator build the fixes were written for](#which-emulator-build-the-fixes-were-written-for)
+are theirs. Others of the same kind should work, but haven't been tried. (The dashboard also
+needs files from an *older* package, Castle Crashers' Xbox One one -- see
+[DASHBOARD.md](DASHBOARD.md). That package can't serve as the system stack: it is the legacy
+generation.)
 
 Why two packages: the Xbox One package has the complete, matching, translated 360 system
 stack, but its own `Emu.exe` is built for the Xbox One OS. The PC host supplies the

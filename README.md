@@ -41,8 +41,9 @@ fixes found so far and the tools to find the next ones. It doesn't promise a pla
 **Bring your own (none of it is in this repository):**
 - the game: an Xbox 360 disc **you own**, as an ISO you dumped yourself
 - a **XEO3 console folder**: Microsoft's emulator and the 360 system files it runs
-  (kernel, xam, ...), assembled from back-compat packages you own. See
-  [docs/CONSOLE_FOLDER.md](docs/CONSOLE_FOLDER.md).
+  (kernel, xam, ...), assembled from back-compat packages you own. The kit was made with
+  **Fuzion Frenzy** (PC package: the emulator) and **Super Meat Boy** (Xbox One package:
+  the 360 system stack). See [docs/CONSOLE_FOLDER.md](docs/CONSOLE_FOLDER.md).
 
 **Free tools (setup.ps1 checks for all of them):**
 - Windows 10/11 x64 with a CPU that has AVX
@@ -81,6 +82,7 @@ The full walkthrough, including the manual checks between those steps, is
 | [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | crashes, freezes, black screens, and how they were tracked down |
 | [HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) | XEO3 internals: DLL exports, naming, calling convention |
 | [ORIGINAL_XBOX.md](docs/ORIGINAL_XBOX.md) | original Xbox games on the same emulator |
+| [DASHBOARD.md](docs/DASHBOARD.md) | the 360 dashboard: My Games, Play Disc and the Guide for your recompiled games |
 | [recompiler/README.md](recompiler/README.md) | the recompiler and what this fork adds |
 
 ## Layout
@@ -88,9 +90,11 @@ The full walkthrough, including the manual checks between those steps, is
 ```
 recompiler/   XenonRecomp + XenonAnalyse (the fork), third-party libraries as submodules
 runtime/      hand-written C++ compiled into every game DLL (see docs/RUNTIME.md)
-scripts/      setup, new-game, recompile, build, install, run
+scripts/      setup, new-game, recompile, build, install, run; recompile-dashboard,
+              install-dashboard, add-game-to-my-games
 tools/        Python helpers the scripts use, and debugging tools
 examples/     crackdown/: a complete, working config
+dashboard/    the 360 dashboard's config, its runtime and the title-switch relay
 games/        your games (created by new-game.ps1; ignored by git)
 docs/
 ```
@@ -101,6 +105,15 @@ The same emulator also runs original Xbox games, through the 360's own original-
 (`xefu.xex`) and Microsoft's `xefu` DLLs, all from back-compat packages. That works for
 Microsoft's own packages. Running an original Xbox game they never shipped is untested.
 [docs/ORIGINAL_XBOX.md](docs/ORIGINAL_XBOX.md) has what is known.
+
+## The dashboard
+
+The kit also recompiles the Xbox 360 **NXE dashboard** from your own copy of `dash.xex`.
+In a console folder it boots like a 360: your profile signs in, your recompiled games are
+listed under **My Games** and launch from there or from **Play Disc**, the **Guide button**
+works, and quitting a game brings the dashboard back. It runs offline (no Xbox Live).
+[docs/DASHBOARD.md](docs/DASHBOARD.md) has what you need to supply, the steps, and what has
+and hasn't been tested yet.
 
 ## Legal
 

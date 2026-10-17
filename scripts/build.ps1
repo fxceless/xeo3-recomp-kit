@@ -26,6 +26,11 @@ $started = Get-Date
 $clang = Get-ClangCl
 $vcvars = Get-VcVars
 New-Item -ItemType Directory -Force -Path $out | Out-Null
+# The headers force-included into every source. A game uses the kit runtime's; the
+# dashboard (scripts\recompile-dashboard.ps1) lists its own in game.json.
+$isDash = ($info.PSObject.Properties.Name -contains "kind") -and ($info.kind -eq "dashboard")
+$forced = @("zz_title.h", "zz_switch_hook.h", "zz_import_hook.h", "zz_mmio_hook.h")
+if (($info.PSObject.Properties.Name -contains "forceIncludes") -and $info.forceIncludes) { $forced = @($info.forceIncludes) }
 
 # --- gate: one build per game at a time ---------------------------------------------
 $lock = Join-Path $ppc ".build.lock"
@@ -42,11 +47,13 @@ try {
     $py = Get-Python
     & $py -I (Join-Path $ToolsDir "check_ppc_set.py") $ppc
     if ($LASTEXITCODE -ne 0) { Fail "ppc\ is not one clean recompiler run -- re-run scripts\recompile.ps1" }
-    $idx = Get-Item (Join-Path $ppc "zz_save_idx.h") -ErrorAction SilentlyContinue
+    $idxName = if ($isDash) { "zz_dash_idx.h" } else { "zz_save_idx.h" }
+    $rerun = if ($isDash) { "scripts\recompile-dashboard.ps1" } else { "scripts\recompile.ps1" }
+    $idx = Get-Item (Join-Path $ppc $idxName) -ErrorAction SilentlyContinue
     $imp = Get-Item (Join-Path $ppc "ppc_import_mapping.cpp")
-    if (-not $idx -or $idx.LastWriteTime -lt $imp.LastWriteTime) { Fail "zz_save_idx.h is older than this run's import table -- re-run scripts\recompile.ps1" }
-    foreach ($h in "zz_title.h", "zz_switch_hook.h", "zz_import_hook.h", "zz_mmio_hook.h", "ppc_precomp_init.cpp") {
-        if (-not (Test-Path (Join-Path $ppc $h))) { Fail "ppc\$h is missing -- re-run scripts\recompile.ps1" }
+    if (-not $idx -or $idx.LastWriteTime -lt $imp.LastWriteTime) { Fail "$idxName is older than this run's import table -- re-run $rerun" }
+    foreach ($h in @($forced) + @("ppc_precomp_init.cpp")) {
+        if (-not (Test-Path (Join-Path $ppc $h))) { Fail "ppc\$h is missing -- re-run $rerun" }
     }
 
     Push-Location $ppc
@@ -64,7 +71,8 @@ try {
             # The force-included headers opt every source into the runtime: the game's name,
             # the jump-table miss reporter, the import thunks (saves, sign-in, fps meter) and
             # the MMIO hooks. ppc_context.h defaults each of them to the plain behaviour.
-            $rsp = "/c /arch:AVX /clang:-Wno-c++17-extensions /Oy /O2$defs /FIzz_title.h /FIzz_switch_hook.h /FIzz_import_hook.h /FIzz_mmio_hook.h " +
+            $fi = ($forced | ForEach-Object { "/FI$_" }) -join " "
+            $rsp = "/c /arch:AVX /clang:-Wno-c++17-extensions /Oy /O2$defs $fi " +
                    (($chunks[$k] | ForEach-Object { "`"$_`"" }) -join " ")
             Set-Content -Path "chunk$k.rsp" -Value $rsp -Encoding Ascii
             $procs += Start-Process -FilePath "cmd.exe" -NoNewWindow -PassThru -WorkingDirectory $ppc `
@@ -106,7 +114,8 @@ try {
     Set-Content -Path (Join-Path $out "build.txt") -Value "$md5  $(Get-Date -Format s)"
     Say ("built  {0}.dll (+ _no.dll)  md5 {1}  {2:N0} bytes  in {3:N1} min" -f $name, $md5,
          (Get-Item (Join-Path $out "$name.dll")).Length, ((Get-Date) - $started).TotalMinutes)
-    Say "Next: scripts\install.ps1 -Game $Game -Console <your console folder>"
+    if ($isDash) { Say "Next: scripts\install-dashboard.ps1 -Console <your dashboard console folder> -Flash <the package's Flash folder>" }
+    else { Say "Next: scripts\install.ps1 -Game $Game -Console <your console folder>" }
 } finally {
     Remove-Item $lock -ErrorAction SilentlyContinue
 }
